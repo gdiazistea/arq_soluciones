@@ -1,135 +1,110 @@
-# 🧠 Análisis de Sentimientos sobre los Aranceles de Trump en Twitter
-
-Este proyecto permite recolectar, analizar y visualizar los sentimientos de los usuarios de Twitter sobre los aranceles implementados por Donald Trump. Utiliza Python, procesamiento de lenguaje natural (NLP) y herramientas de visualización para obtener insights políticos y económicos que pueden ayudar a entender cómo se perciben estas políticas en el mundo digital.
-
----
-## 🏗️ Arquitectura de Solución
-
-### 🔹 1. Extracción de Datos
-- **Conexión a Twitter**: Utilizamos una herramienta llamada `Tweepy` para conectarnos a la API de Twitter. Esto nos permite acceder a los tweets de usuarios que mencionan temas como:
-  - `Trump tariffs` (Aranceles de Trump)
-  - `#TrumpTariffs`
-  - `China trade war` (Guerra comercial con China)
-  - `tariffs support` (apoyo a los aranceles), `tariffs against` (en contra de los aranceles).
-- **Recolección de Tweets**: Buscamos tweets públicos que contengan estas palabras clave.
-- **Almacenamiento de Datos**: Los tweets obtenidos se almacenan en un sistema de almacenamiento en la nube o de manera local, dependiendo de las preferencias del cliente.
-
-### 🔹 2. Análisis de Sentimientos
-- **Procesamiento de Lenguaje Natural (NLP)**: Se utilizan técnicas de procesamiento de texto como `TextBlob` y `VADER` para analizar la polaridad de los tweets.
-  - **Positivo**: Tweets que expresan apoyo a los aranceles o posiciones a favor.
-  - **Negativo**: Tweets que expresan desacuerdo o críticas hacia los aranceles.
-  - **Neutro**: Tweets que no muestran una inclinación clara hacia ninguno de los dos lados.
-- **Limpieza de Texto**: El texto se limpia eliminando palabras irrelevantes (como "de", "en", "por") y normalizando las palabras (lematización).
-
-### 🔹 3. Almacenamiento
-- **Opciones de Almacenamiento**:
-  - **Google Sheets API**: Almacenamiento en hojas de cálculo de Google.
-  - **MongoDB Atlas Free Tier**: Base de datos en la nube gratuita para almacenar los datos de manera eficiente.
-  - **CSV Local**: Archivos CSV guardados en el equipo local sin ningún costo.
-
-### 🔹 4. Visualización
-- **Dashboard Interactivo**: Utilizamos `Streamlit`, una herramienta fácil de usar, para crear un panel donde los usuarios pueden ver:
-  - **Tendencias de Sentimiento**: ¿Qué porcentaje de tweets son positivos, negativos o neutros?
-  - **Palabras Frecuentes**: Las palabras más comunes que aparecen en los tweets analizados.
-  - **Nube de Palabras**: Una representación visual de las palabras más importantes.
-  - (Opcional) **Mapa de Calor Geográfico**: Una visualización del sentimiento por ubicación, mostrando cómo se perciben los aranceles en diferentes partes del mundo.
-
----
-
-## 💰 Presupuesto Estimado
-
-| Recurso                          | Costo mensual | Descripción                                           |
-|----------------------------------|---------------|-------------------------------------------------------|
-| Twitter API v2 (nivel básico)    | $0            | Gratis hasta 500k tweets por mes                      |
-| Render.com / Railway / Heroku    | $0            | Free Tier para scripts Python                         |
-| Dominio personalizado (opcional)| $12 anuales   | Para acceso a dashboard vía URL propia                |
-| Google Sheets API                | $0            | Gratis                                                |
-| MongoDB Atlas Free Tier          | $0            | Hasta 512MB gratis                                    |
-| Streamlit Cloud                  | $0            | Hosting para dashboards                               |
-| Horas freelance (opcional)       | $200-1000     | Desarrollo o soporte adicional                        |
-| Contingencia / Premium APIs      | $500-800      | Modelos ML, upgrades de API, almacenamiento extra     |
-
-**Total estimado:** *hasta 2000 USD con margen para escalar*
-
----
-
-## 📂 Estructura del Proyecto
-
-trump_tariffs_sentiment/
-├── main.py              # Script principal: orquesta la recolección y análisis
-├── twitter_api.py       # Módulo para autenticación con la API de Twitter
-├── sentiment.py         # Lógica de análisis de sentimientos con TextBlob/VADER
-├── storage.py           # Funciones para guardar los datos (CSV, Sheets, Mongo)
-├── dashboard.py         # Dashboard interactivo con Streamlit
-├── requirements.txt     # Lista de dependencias del proyecto
-└── README.md            # Documentación general del proyecto
-
-
-
----
-
-## ✅ Requisitos
-
-- Python 3.8 o superior
-- Librerías:
-  - `tweepy`
-  - `textblob`
-  - `nltk`
-  - `vaderSentiment`
-  - `pandas`
-  - `streamlit`
-  - `matplotlib`
-  - `wordcloud`
-
----
-
-## 🚀 Ejecución
-
-```bash
-pip install -r requirements.txt
-python main.py
-streamlit run dashboard.py
-```
----
+# 🏗️ Arquitectura de Solución
 
 ## Diagrama de clases
 ```mermaid
-classDiagram
-    class TwitterAPI {
-        - api_key : string
-        - api_secret : string
-        - access_token : string
-        - access_token_secret : string
-        + autenticar() : API
-        + buscar_tweets(query: string, lang: string, count: int) : list
-    }
 
-    class SentimentAnalyzer {
-        + analizar_textblob(texto: string) : string
-        + analizar_vader(texto: string) : dict
-    }
+graph TD
 
-    class StorageHandler {
-        + guardar_en_csv(data: list, archivo: string) : void
-        + guardar_en_mongo(data: list, coleccion: string) : void
-    }
+%% Fase I: Ingreso del evento
+A1[Portal Web / Presencial] --> A2[Validación póliza, saldo y matrícula]
+A2 --> A3[Registro en SQL - Estado: Ingresado]
 
-    class Dashboard {
-        + mostrar_resumen(data: DataFrame) : void
-        + mostrar_graficos(data: DataFrame) : void
-        + iniciar_app() : void
-    }
+%% Fase II: Documentación y OCR
+A3 --> B1[Documentos cargados en SharePoint]
+B1 --> B2[Webhook dispara evento]
+B2 --> B3[Mensaje a Azure Service Bus]
+B3 --> B4[OCR en la nube procesa documentos]
+B4 --> B5[Genera JSON con datos extraídos]
+B5 --> B6[Guardar JSON en carpeta del evento]
 
-    class Main {
-        - twitter_api : TwitterAPI
-        - sentiment : SentimentAnalyzer
-        - storage : StorageHandler
-        + ejecutar() : void
-    }
+%% Fase III: Ingesta y clasificación
+B6 --> C1[Mensaje en json-validation-queue]
+C1 --> C2[Procesamiento estructurado en DB SQL]
+C2 --> C3{¿Documento incompleto o inválido?}
+C3 -- Sí --> C4[Insertar en ColaProcesoManual]
+C4 --> C5[Azure Function notifica en Teams: Tareas Manuales OCR]
+C3 -- No --> D1[Evaluación de Reglas de Negocio]
 
-    TwitterAPI --> Main : Provee tweets
-    SentimentAnalyzer --> Main : Analiza sentimientos
-    StorageHandler --> Main : Guarda resultados
-    Dashboard ..> Main : Se conecta opcionalmente
+%% Fase IV: Transición de estado
+D1 --> D2{¿Validaciones correctas?}
+D2 -- No --> D3[Estado: Rechazado]
+D2 -- Sí --> D4[Estado: Requiere Aprobación]
+D3 --> D5[Azure Function notifica Teams: Casos Rechazados]
+D4 --> D6[Azure Function notifica Teams: Pendientes Aprobación]
+
+%% Fase V: Revisión humana
+D4 --> E1[Revisión por empleados en Teams]
+E1 --> E2{¿Aprobar o Rechazar?}
+E2 -- Aprobar --> E3[Estado: Aprobado]
+E2 -- Rechazar --> E4[Estado: Rechazado]
+
+%% Fase VI: Informes y alertas
+E3 --> F1[Azure Function genera informe de pagos]
+D3 --> F2[Azure Function genera lista de rechazos]
+C4 --> F3[Azure Function lista errores OCR]
+A3 --> F4[Informe matutino de eventos ingresados]
+D1 --> F5[Listado vespertino: eventos aún en 'Ingresado']
+E3 --> F6[Alertas por asegurados con saldo < USD 2000]
+
 ```
 
+---
+## Pipelines
+
+```mermaid
+
+graph TD
+
+%% Pipeline 1: Ingreso y Validación Inicial
+A1[Usuario Portal Web / Presencial] --> A2[Pipeline 1: Ingreso y Validación Inicial]
+A2 --> A3[Validación de póliza, saldo y matrícula]
+A3 --> A4[Registro en SQL - Estado: Ingresado]
+
+%% Pipeline 2: Carga de Documentos y Activación OCR
+A4 --> B1[Pipeline 2: Carga de Documentos en SharePoint]
+B1 --> B2[Webhook de SharePoint]
+B2 --> B3[Publicación en Azure Service Bus]
+
+%% Pipeline 3: Procesamiento OCR
+B3 --> C1[Pipeline 3: Procesamiento OCR]
+C1 --> C2[OCR procesa documento]
+C2 --> C3[Generación de archivo JSON]
+C3 --> C4[Guardar JSON en SharePoint]
+
+%% Pipeline 4: Ingesta a SQL y Gestión de Errores OCR
+C4 --> D1[Pipeline 4: Ingesta de JSON y validación]
+D1 --> D2[Transformación e inserción en SQL]
+D2 --> D3{¿Datos incompletos?}
+D3 -- Sí --> D4[Insertar en ColaProcesoManual]
+D4 --> D5[Azure Function: Notificar en Teams Batch]
+D3 -- No --> E1[Pipeline 5: Clasificación automática]
+
+%% Pipeline 5: Clasificación automática y notificaciones
+E1 --> E2[Validación de montos y reglas]
+E2 --> E3{¿Validaciones OK?}
+E3 -- No --> E4[Estado: Rechazado]
+E3 -- Sí --> E5[Estado: Requiere Aprobación]
+E4 --> E6[Azure Function: Notificar Rechazo Batch]
+E5 --> E7[Azure Function: Notificar Revisión Batch]
+
+%% Pipeline 6: Revisión humana y resolución
+E5 --> F1[Pipeline 6: Revisión Humana en Teams]
+F1 --> F2{¿Aprobar o Rechazar?}
+F2 -- Aprobar --> F3[Estado: Aprobado]
+F2 -- Rechazar --> F4[Estado: Rechazado]
+
+%% Pipeline 7: Informe de eventos listos para pago
+F3 --> G1[Pipeline 7: Generar informe de pagos]
+G1 --> G2[Enviar email a Finanzas / Teams Batch]
+
+%% Pipeline 8: Informes periódicos de gestión
+A4 --> H1[Pipeline 8: Informes de eventos ingresados]
+D4 --> H2[Pipeline 8: Informes de errores OCR]
+E4 --> H3[Pipeline 8: Eventos rechazados o incompletos]
+F3 --> H4[Pipeline 8: Asegurados con saldo < $2000]
+H1 --> H5[Azure Functions programadas - Envío por email]
+H2 --> H5
+H3 --> H5
+H4 --> H5
+
+```
