@@ -86,9 +86,9 @@ E3 -- No --> E4[Estado: Rechazado]
 E3 -- Sí --> E5[Estado: Requiere Aprobación]
 E4 --> E6[Azure Function: Notificar Rechazo Batch]
 E5 --> E7[Azure Function: Notificar Revisión Batch]
+E7 --> F1[Pipeline 6: Revisión Humana en Teams]
 
 %% Pipeline 6: Revisión humana y resolución
-E5 --> F1[Pipeline 6: Revisión Humana en Teams]
 F1 --> F2{¿Aprobar o Rechazar?}
 F2 -- Aprobar --> F3[Estado: Aprobado]
 F2 -- Rechazar --> F4[Estado: Rechazado]
